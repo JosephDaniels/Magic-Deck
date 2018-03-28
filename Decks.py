@@ -94,7 +94,7 @@ class Deck(object):
         card_indexes = [deck_order[i:i+2] for i in range(0, len(deck_order), 2)]
         self.construct_deck(card_indexes)
 
-    def create_deck_order(self):
+    def create_deckstring(self):
         deck_order = ""
         for card in self.cards:
             deck_order+=str(card)
@@ -172,8 +172,8 @@ if __name__ == "__main__":
     example_deck = Deck()
     example_deck.create_deck_from(MEMORANDUM)
 
-    deck_order = deck.create_deck_order()
-    example_deck_order = example_deck.create_deck_order()
+    deck_order = deck.create_deckstring()
+    example_deck_order = example_deck.create_deckstring()
 
     if deck_order == example_deck_order:
         print "The decks perfectly match!"
@@ -181,7 +181,6 @@ if __name__ == "__main__":
         print deck_order
         print example_deck_order
 
-    
     while showtime == True:
         for event in pygame.event.get():
             if event.type == pygame.KEYDOWN:
