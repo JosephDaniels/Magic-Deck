@@ -46,7 +46,7 @@ NDO_SUITS = ["H", "C", "D", "S"] ## New Deck Order. Bicycle suit order from out 
 
 ## DECK CONSTANTS
 
-MEMORANDUM = ["JS7CTHAD4C7H4DAS4H7D4SAHTD7SJCKDTS8CJHACKS5C8H3DQSKH9CQH6C9H2D3C6H5D2S3H8D5SKCJD8S10C2C5S6D3S2H9D6SQCQD9S"]
+MEMORANDUM = "JS7CTHAD4C7H4DAS4H7D4SAHTD7SJCKDTS8CJHACKS5C8H3DQSKH9CQH6C9H2D3C6H5D2S3H8D5SKCJD8STC2C5S6D3S2H9D6SQCQD9S"
 
 def anti_faro(deck):
     pass
@@ -70,20 +70,24 @@ class Deck(object):
 
     def make_new_deck(self):
         ## Makes a deck in NDO
-        top_half, bottom_half = self.cut_the(self.make_a_deck(NDO_SUITS))
+        top_half, bottom_half = self.cut_the(self.make_a_deck_in(NDO_SUITS))
         ## Reverse the bottom half, so we see the ace of spades. AK AK KA KA
         new_deck = top_half + bottom_half[0:13][::-1] + bottom_half[13:26][::-1]
-        for card_index in new_deck:
-            card = Card(card_index)
-            self.add_card(card)
+        self.construct_deck(new_deck)
 
-    def make_a_deck(self,suit_order):
+    def make_a_deck_in(self,suit_order):
         ## Makes a deck in a specific suit order, AK AK AK AK
         return [value+suit for suit in suit_order for value in CARD_VALUES]
 
-    def create_deck(self,deck_order):
-        deck = [deck_order[i:i+2] for i in range(0, len(deck_order), 2)]
-        return deck
+    def construct_deck(self,card_indexes):
+        for card_index in card_indexes:
+            card = Card(card_index)
+            self.add_card(card)
+            
+    def create_deck_from(self,deck_order):
+        self.clear()
+        card_indexes = [deck_order[i:i+2] for i in range(0, len(deck_order), 2)]
+        self.construct_deck(card_indexes)
 
     def make_mirror(self):
         ## Works on a deck in NDO
@@ -154,9 +158,8 @@ if __name__ == "__main__":
     deck = Deck()
     deck.memorandum()
 
-    example_deck = deck.create_deck(MEMORANDUM)
-
-    print example_deck
+    example_deck = Deck()
+    example_deck.create_deck_from(MEMORANDUM)
     
     while showtime == True:
         for event in pygame.event.get():
@@ -173,8 +176,12 @@ if __name__ == "__main__":
                 screen.blit(pygame.transform.scale(background,event.dict['size']),(0,0))
             horizontal_adjustment = 85
             for card in deck.cards:
-                screen.blit(card.image, (horizontal_adjustment,300))
-                horizontal_adjustment += 15
+                screen.blit(card.image, (horizontal_adjustment,200))
+                horizontal_adjustment+=15
+            horizontal_adjustment = 85
+            for card in example_deck.cards:
+                screen.blit(card.image, (horizontal_adjustment,400))
+                horizontal_adjustment+=15
         pygame.display.flip()
         time.sleep(0.03) #Frame limiter at 30 milliseconds
     pygame.quit()
