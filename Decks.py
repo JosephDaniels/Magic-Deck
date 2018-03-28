@@ -115,11 +115,11 @@ if __name__ == "__main__":
     
     
     ## Begin Screen Setup
-    screen=pygame.display.set_mode((800,600),HWSURFACE|DOUBLEBUF|RESIZABLE)
+    screen=pygame.display.set_mode((1024,768),HWSURFACE|DOUBLEBUF|RESIZABLE)
     
     background=pygame.image.load("backgrounds/example.png")#You need an example picture in the same folder as this file!
    
-    screen.blit(pygame.transform.scale(background,(800,600)),(0,0))
+    screen.blit(pygame.transform.scale(background,(1024,768)),(0,0))
 
     pygame.display.flip()
 
@@ -144,9 +144,9 @@ if __name__ == "__main__":
             elif event.type==VIDEORESIZE:
                 screen=pygame.display.set_mode(event.dict['size'],HWSURFACE|DOUBLEBUF|RESIZABLE)
                 screen.blit(pygame.transform.scale(background,event.dict['size']),(0,0))
-            horizontal_adjustment = 0
+            horizontal_adjustment = 85
             for card in deck.cards:
-                screen.blit(card.image, (horizontal_adjustment,250))
+                screen.blit(card.image, (horizontal_adjustment,300))
                 horizontal_adjustment += 15
         pygame.display.flip()
     pygame.quit()
