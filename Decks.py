@@ -91,12 +91,16 @@ class Deck(object):
             pretty_deck.append(expanded_value+" of "+expanded_suit)
         return pretty_deck
 
-    def memorandum():
+    def memorandum(self):
         ## Returns a deck in Memorandum Stack.
         ## For now, it returns a standard faro 4 deck without the adjustment.
-        mirror_deck = (make_mirror(make_new_deck()))
+        
+        mirror_deck = (self.make_mirror(self.make_new_deck()))
         faro4deck = out_faro(out_faro(out_faro(out_faro(mirror_deck))))
         return faro4deck
+
+    def clear(self):
+        self.cards = []
 
     def cut_the(self,deck):
         top_half = len(deck)/2
@@ -111,6 +115,9 @@ class Deck(object):
 
     def spit_it_out(self):
         print self.print_me()
+
+    def shuffle(self):
+        random.shuffle(self.cards)
 
 
 ## PROGRAM MAIN LOOP ##
@@ -132,6 +139,7 @@ if __name__ == "__main__":
 
     deck = Deck()
     deck.make_new_deck()
+    deck.shuffle()
     
     while showtime == True:
         for event in pygame.event.get():
