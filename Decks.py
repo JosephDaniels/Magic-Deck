@@ -105,6 +105,9 @@ class Deck(object):
         self.out_faro(4)
         self.cards = self.cards[1:12]+[self.cards[0]]+self.cards[12:]
         self.cards = self.cards[44:]+self.cards[0:44]
+        self.cards = self.cards[0:34]+[self.cards[51]]+self.cards[34:51]
+        self.cards = self.cards[0:24]+self.cards[34:]+self.cards[24:34]
+        self.cards = self.cards[0:24]+[self.cards[27]]+self.cards[24:27]+self.cards[28:]
 
     def clear(self):
         self.cards = []
