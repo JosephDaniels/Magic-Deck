@@ -44,38 +44,8 @@ CHASED_SUITS = ["C", "H", "S", "D"]  ## The "Chased Order."
 SHOCKED_SUITS = ["S", "H", "C", "D"] ## The "Shocked Order."
 NDO_SUITS = ["H", "C", "D", "S"] ## New Deck Order. Bicycle suit order from out of the box.
 
-def cut_the(deck):
-    half = len(deck)/2
-    return deck[:half], deck[half:]
-
-def make_a_deck(suit_order):
-    return [value+suit for suit in suit_order for value in CARD_VALUES]
-
-def make_new_deck():
-    top_half, bottom_half = cut_the(make_a_deck(NDO_SUITS))
-    ## Reverse the bottom half, so we see the ace of spades.
-    return top_half + bottom_half[0:13][::-1] + bottom_half[13:26][::-1]
-
-def make_mirror(deck):
-    return deck[13:26] + deck[0:13] + deck[26:52]
-
-flatten = lambda l: [i for s in l for i in s]
-
-def out_faro(deck):
-    ## A shuffle that cuts the deck in half and performs an out faro,
-    ## This leaves the Ace of spades on bottom and Ace of Clubs on top.
-    return flatten([[x, y] for x, y in zip(*cut_the(deck))])
-
-def memorandum():
-    ## Returns a deck in Memorandum Stack.
-    ## For now, it returns a standard faro 4 deck without the adjustment.
-    mirror_deck = (make_mirror(make_new_deck()))
-    faro4deck = out_faro(out_faro(out_faro(out_faro(mirror_deck))))
-    return faro4deck
-
-def remove_whitespace(prettydeck):
-    imagelist = [card.replace(" ","") for card in prettydeck]
-    return imagelist
+def anti_faro(deck):
+    pass
 
 class Card(object):
     def __init__(self,card_index):
@@ -94,6 +64,24 @@ class Deck(object):
         if card in self.cards:
             self.cards.remove(card)
 
+    def make_new_deck(self):
+        ## Makes a deck in NDO
+        top_half, bottom_half = self.cut_the(self.make_a_deck(NDO_SUITS))
+        ## Reverse the bottom half, so we see the ace of spades. AK AK KA KA
+        new_deck = top_half + bottom_half[0:13][::-1] + bottom_half[13:26][::-1]
+        for card_index in new_deck:
+            card = Card(card_index)
+            self.add_card(card)
+
+    def make_a_deck(self,suit_order):
+        ## Makes a deck in a specific suit order, AK AK AK AK
+        return [value+suit for suit in suit_order for value in CARD_VALUES]
+   
+    def make_mirror(self,deck):
+        ## Works on a deck in NDO
+        ## Cuts the 13 Clubs cards to the top of the deck
+        return self.deck[13:26] + self.deck[0:13] + self.deck[26:52]
+
     def print_me(self):
         pretty_deck = []
         for index, card in enumerate(self.cards):
@@ -102,6 +90,24 @@ class Deck(object):
             expanded_suit = CARD_SUIT_DICT[new_card[1]]
             pretty_deck.append(expanded_value+" of "+expanded_suit)
         return pretty_deck
+
+    def memorandum():
+        ## Returns a deck in Memorandum Stack.
+        ## For now, it returns a standard faro 4 deck without the adjustment.
+        mirror_deck = (make_mirror(make_new_deck()))
+        faro4deck = out_faro(out_faro(out_faro(out_faro(mirror_deck))))
+        return faro4deck
+
+    def cut_the(self,deck):
+        top_half = len(deck)/2
+        return deck[:top_half], deck[top_half:]
+
+    flatten = lambda l: [i for s in l for i in s]
+
+    def out_faro(self,deck):
+        ## A shuffle that cuts the deck in half and performs an out faro,
+        ## This leaves the Ace of spades on bottom and Ace of Clubs on top.
+        return flatten([[x, y] for x, y in zip(*self.cut_the(deck))])
 
     def spit_it_out(self):
         print self.print_me()
@@ -113,9 +119,6 @@ showtime = True
 pygame.init()
 
 if __name__ == "__main__":
-
-    
-    
     ## Begin Screen Setup
     screen=pygame.display.set_mode((1024,768),HWSURFACE|DOUBLEBUF|RESIZABLE)
     
@@ -127,14 +130,8 @@ if __name__ == "__main__":
 
     ## Prepare the Deck
 
-    new_deck = make_new_deck()
-    random.shuffle(new_deck)
-
     deck = Deck()
-  
-    for card_index in new_deck:
-        card = Card(card_index)
-        deck.add_card(card)
+    deck.make_new_deck()
     
     while showtime == True:
         for event in pygame.event.get():
