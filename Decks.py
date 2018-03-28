@@ -190,7 +190,6 @@ if __name__ == "__main__":
                     Escape Key Detected. Quitting the App.
                     """)
                     pygame.quit()
-                    showtime=False
                     sys.exit()
             elif event.type==QUIT: pygame.display.quit()
             elif event.type==VIDEORESIZE:
