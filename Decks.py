@@ -99,6 +99,7 @@ class Deck(object):
         self.make_new_deck()
         mirror_deck = self.make_mirror()
         self.out_faro(4)
+        self.cards = self.cards[1:11]+list(self.cards[0])+self.cards[12:51]
 
     def clear(self):
         self.cards = []
