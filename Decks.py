@@ -77,10 +77,11 @@ class Deck(object):
         ## Makes a deck in a specific suit order, AK AK AK AK
         return [value+suit for suit in suit_order for value in CARD_VALUES]
    
-    def make_mirror(self,deck):
+    def make_mirror(self):
         ## Works on a deck in NDO
         ## Cuts the 13 Clubs cards to the top of the deck
-        return self.deck[13:26] + self.deck[0:13] + self.deck[26:52]
+        mirror = self.cards[13:26] + self.cards[0:13] + self.cards[26:52]
+        self.cards = mirror
 
     def print_me(self):
         pretty_deck = []
@@ -94,10 +95,10 @@ class Deck(object):
     def memorandum(self):
         ## Returns a deck in Memorandum Stack.
         ## For now, it returns a standard faro 4 deck without the adjustment.
-        
-        mirror_deck = (self.make_mirror(self.make_new_deck()))
-        faro4deck = out_faro(out_faro(out_faro(out_faro(mirror_deck))))
-        return faro4deck
+        self.clear()
+        self.make_new_deck()
+        mirror_deck = self.make_mirror()
+        self.out_faro(4)
 
     def clear(self):
         self.cards = []
@@ -106,12 +107,12 @@ class Deck(object):
         top_half = len(deck)/2
         return deck[:top_half], deck[top_half:]
 
-    flatten = lambda l: [i for s in l for i in s]
-
-    def out_faro(self,deck):
-        ## A shuffle that cuts the deck in half and performs an out faro,
-        ## This leaves the Ace of spades on bottom and Ace of Clubs on top.
-        return flatten([[x, y] for x, y in zip(*self.cut_the(deck))])
+    def out_faro(self,faro_number):
+        for shuffles in range(faro_number):
+            flatten = lambda l: [i for s in l for i in s]
+            ## A shuffle that cuts the deck in half and performs an out faro,
+            ## This leaves the Ace of spades on bottom and Ace of Clubs on top.
+            self.cards = flatten([[x, y] for x, y in zip(*self.cut_the(self.cards))])
 
     def spit_it_out(self):
         print self.print_me()
@@ -138,8 +139,7 @@ if __name__ == "__main__":
     ## Prepare the Deck
 
     deck = Deck()
-    deck.make_new_deck()
-    deck.shuffle()
+    deck.memorandum()
     
     while showtime == True:
         for event in pygame.event.get():
