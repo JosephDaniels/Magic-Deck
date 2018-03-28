@@ -48,10 +48,7 @@ NDO_SUITS = ["H", "C", "D", "S"] ## New Deck Order. Bicycle suit order from out 
 
 ## DECK CONSTANTS
 
-MEMORANDUM = "JS7CTHAD4C7H4DAS4H7D4SAHTD7SJCKDTS8CJHACKS5C8H3DQSKH9CQH6C9H2D3C6H5D2S3H8D5SKCJD8STC2C5S6D3S2H9D6SQCQD9S"
-
-def anti_faro(deck):
-    pass
+MEMORANDUM = "JS7CTHAD4C7H4DAS4H7D4SAHTD7SJCKDTS8CJHACKS5C8H3DQSKH9CQH6C9H2D3C6H5D2S3H8D5SKCJD8STC2C5H6D3S2H9D6SQCQD9S"
 
 class Card(object):
     def __init__(self,card_index):
@@ -141,6 +138,15 @@ class Deck(object):
             ## This leaves the Ace of spades on bottom and Ace of Clubs on top.
             self.cards = flatten([[x, y] for x, y in zip(*self.cut_the(self.cards))])
 
+    def anti_faro(self):
+        top_half = []
+        bottom_half = []
+        for i in range(0,len(self.cards),2):
+            top_half.append(self.cards[i])
+            bottom_half.append(self.card[i+1])
+        self.cards = bottom_half + top_half
+        
+
     def spit_it_out(self):
         print self.print_me()
 
@@ -166,19 +172,21 @@ if __name__ == "__main__":
     ## Prepare the Deck
 
     deck = Deck()
-    deck.memorandum()
-
-    example_deck = Deck()
-    example_deck.create_deck_from(MEMORANDUM)
-
-    deck_order = deck.return_deckstring()
-    example_deck_order = example_deck.return_deckstring()
-
-    if deck_order == example_deck_order:
-        print "The decks perfectly match!"
-    else:
-        print deck_order
-        print example_deck_order
+    deck.make_new_deck()
+    deck.anti_faro()
+##    deck.memorandum()
+##
+##    example_deck = Deck()
+##    example_deck.create_deck_from(MEMORANDUM)
+##
+##    deck_order = deck.return_deckstring()
+##    example_deck_order = example_deck.return_deckstring()
+##
+##    if deck_order == example_deck_order:
+##        print "The decks perfectly match!"
+##    else:
+##        print deck_order
+##        print example_deck_order
 
     while showtime == True:
         for event in pygame.event.get():
