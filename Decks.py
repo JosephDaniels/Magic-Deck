@@ -7,6 +7,8 @@ import pprint
 
 import pygame
 
+import time
+
 from pygame.locals import *
 
 ## CARD VALUES AND SUITS ##
@@ -149,6 +151,7 @@ if __name__ == "__main__":
                 screen.blit(card.image, (horizontal_adjustment,300))
                 horizontal_adjustment += 15
         pygame.display.flip()
+        time.sleep(0.03) #Frame limiter at 30 milliseconds
     pygame.quit()
 
 
