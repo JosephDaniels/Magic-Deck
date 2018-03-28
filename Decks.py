@@ -123,10 +123,6 @@ if __name__ == "__main__":
 
     pygame.display.flip()
 
-    ## Constant Declaration
-
-    horizontal_adjustment = 0
-
     ## Prepare the Deck
 
     deck = Deck()
@@ -149,6 +145,7 @@ if __name__ == "__main__":
 ##                screen=pygame.display.set_mode(event.dict['size'],HWSURFACE|DOUBLEBUF|RESIZABLE)
 ##                screen.blit(pygame.transform.scale(background,event.dict['size']),(0,0))
             for card in deck.cards:
+                horizontal_adjustment = 0
                 screen.blit(card.image, (horizontal_adjustment,0))
                 horizontal_adjustment += 15
         pygame.display.flip()
