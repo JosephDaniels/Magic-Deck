@@ -96,11 +96,10 @@ class Deck(object):
             deck_order+=str(card)
         return deck_order
 
-    def make_mirror(self):
+    def mirror(self):
         ## Works on a deck in NDO
         ## Cuts the 13 Clubs cards to the top of the deck
-        mirror = self.cards[13:26] + self.cards[0:13] + self.cards[26:52]
-        self.cards = mirror
+        self.cards = self.cards[13:26] + self.cards[0:13] + self.cards[26:52]
 
     def print_me(self):
         pretty_deck = []
@@ -116,7 +115,7 @@ class Deck(object):
         ## For now, it returns a standard faro 4 deck without the adjustment.
         self.clear()
         self.make_new_deck()
-        self.make_mirror()
+        self.mirror()
         self.out_faro(4)
         self.cards = self.cards[1:12]+[self.cards[0]]+self.cards[12:]
         self.cards = self.cards[44:]+self.cards[0:44]
@@ -138,15 +137,15 @@ class Deck(object):
             ## This leaves the Ace of spades on bottom and Ace of Clubs on top.
             self.cards = flatten([[x, y] for x, y in zip(*self.cut_the(self.cards))])
 
-    def anti_faro(self):
-        top_half = []
-        bottom_half = []
-        for i in range(0,len(self.cards),2):
-            top_half.append(self.cards[i])
-            bottom_half.append(self.cards[i+1])
-        self.cards = bottom_half + top_half
+    def anti_faro(self,antifaro_number):
+        for shuffles in range(antifaro_number):
+            top_half = []
+            bottom_half = []
+            for i in range(0,len(self.cards),2):
+                top_half.append(self.cards[i])
+                bottom_half.append(self.cards[i+1])
+            self.cards = top_half + bottom_half
         
-
     def spit_it_out(self):
         print self.print_me()
 
@@ -173,7 +172,8 @@ if __name__ == "__main__":
 
     deck = Deck()
     deck.make_new_deck()
-    deck.anti_faro()
+    deck.mirror()
+    deck.anti_faro(4)
     
 ##    deck.memorandum()
 ##
