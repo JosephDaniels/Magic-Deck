@@ -143,7 +143,7 @@ class Deck(object):
         bottom_half = []
         for i in range(0,len(self.cards),2):
             top_half.append(self.cards[i])
-            bottom_half.append(self.card[i+1])
+            bottom_half.append(self.cards[i+1])
         self.cards = bottom_half + top_half
         
 
