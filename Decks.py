@@ -127,9 +127,12 @@ if __name__ == "__main__":
 
     ## Prepare the Deck
 
+    new_deck = make_new_deck()
+    random.shuffle(new_deck)
+
     deck = Deck()
   
-    for card_index in make_new_deck():
+    for card_index in new_deck:
         card = Card(card_index)
         deck.add_card(card)
     
