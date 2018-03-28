@@ -146,7 +146,7 @@ if __name__ == "__main__":
                 screen.blit(pygame.transform.scale(background,event.dict['size']),(0,0))
             horizontal_adjustment = 0
             for card in deck.cards:
-                screen.blit(card.image, (horizontal_adjustment,0))
+                screen.blit(card.image, (horizontal_adjustment,250))
                 horizontal_adjustment += 15
         pygame.display.flip()
     pygame.quit()
