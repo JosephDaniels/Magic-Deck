@@ -174,6 +174,7 @@ if __name__ == "__main__":
     deck = Deck()
     deck.make_new_deck()
     deck.anti_faro()
+    
 ##    deck.memorandum()
 ##
 ##    example_deck = Deck()
@@ -206,9 +207,9 @@ if __name__ == "__main__":
                 screen.blit(card.image, (horizontal_adjustment,200))
                 horizontal_adjustment+=15
             horizontal_adjustment = 85
-            for card in example_deck.cards:
-                screen.blit(card.image, (horizontal_adjustment,400))
-                horizontal_adjustment+=15
+##            for card in example_deck.cards:
+##                screen.blit(card.image, (horizontal_adjustment,400))
+##                horizontal_adjustment+=15
         pygame.display.flip()
         time.sleep(0.03) #Frame limiter at 30 milliseconds
     pygame.quit()
