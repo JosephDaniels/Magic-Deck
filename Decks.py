@@ -97,9 +97,9 @@ class Deck(object):
         ## For now, it returns a standard faro 4 deck without the adjustment.
         self.clear()
         self.make_new_deck()
-        mirror_deck = self.make_mirror()
+        self.make_mirror()
         self.out_faro(4)
-        self.cards = self.cards[1:11]+list(self.cards[0])+self.cards[12:51]
+##        self.cards = self.cards[1:12]+list(self.cards[0])+self.cards[12:]
 
     def clear(self):
         self.cards = []
