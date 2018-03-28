@@ -46,7 +46,7 @@ NDO_SUITS = ["H", "C", "D", "S"] ## New Deck Order. Bicycle suit order from out 
 
 ## DECK CONSTANTS
 
-MEMORANDUM = ["JS7CTHAD4C7H4DAS4H7D4SAHTD7SJCKDTS8CJHAC"]
+MEMORANDUM = ["JS7CTHAD4C7H4DAS4H7D4SAHTD7SJCKDTS8CJHACKS5C8H3DQSKH9CQH6C9H2D3C6H5D2S3H8D5SKCJD8S10C2C5S6D3S2H9D6SQCQD9S"]
 
 def anti_faro(deck):
     pass
@@ -80,6 +80,9 @@ class Deck(object):
     def make_a_deck(self,suit_order):
         ## Makes a deck in a specific suit order, AK AK AK AK
         return [value+suit for suit in suit_order for value in CARD_VALUES]
+
+    def create_deck(self,deck_order):
+        [deck_order[i:i+2] for i in range(0, len(deck_order), 2)]
    
     def make_mirror(self):
         ## Works on a deck in NDO
@@ -149,6 +152,10 @@ if __name__ == "__main__":
 
     deck = Deck()
     deck.memorandum()
+
+    example_deck = deck.create_deck(MEMORANDUM)
+
+    print example_deck
     
     while showtime == True:
         for event in pygame.event.get():
