@@ -171,8 +171,8 @@ if __name__ == "__main__":
     example_deck = Deck()
     example_deck.create_deck_from(MEMORANDUM)
 
-    deck_order = deck.create_deckstring()
-    example_deck_order = example_deck.create_deckstring()
+    deck_order = deck.return_deckstring()
+    example_deck_order = example_deck.return_deckstring()
 
     if deck_order == example_deck_order:
         print "The decks perfectly match!"
