@@ -82,8 +82,9 @@ class Deck(object):
         return [value+suit for suit in suit_order for value in CARD_VALUES]
 
     def create_deck(self,deck_order):
-        [deck_order[i:i+2] for i in range(0, len(deck_order), 2)]
-   
+        deck = [deck_order[i:i+2] for i in range(0, len(deck_order), 2)]
+        return deck
+
     def make_mirror(self):
         ## Works on a deck in NDO
         ## Cuts the 13 Clubs cards to the top of the deck
