@@ -79,7 +79,7 @@ class Card(object):
     def __init__(self,card_index):
         self.value = card_index[0]
         self.suit = card_index[1]
-        self.image = pygame.image.load("card_images/"+CARD_VALUE_DICT[card_index[0]]+"of"+CARD_SUIT_DICT[card_index[1]]+".png")
+        self.image = pygame.transform.scale(pygame.image.load("card_images/"+CARD_VALUE_DICT[card_index[0]]+"of"+CARD_SUIT_DICT[card_index[1]]+".png"), (87,122))
 
 class Deck(object):
     def __init__(self):
