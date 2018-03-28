@@ -44,6 +44,10 @@ CHASED_SUITS = ["C", "H", "S", "D"]  ## The "Chased Order."
 SHOCKED_SUITS = ["S", "H", "C", "D"] ## The "Shocked Order."
 NDO_SUITS = ["H", "C", "D", "S"] ## New Deck Order. Bicycle suit order from out of the box.
 
+## DECK CONSTANTS
+
+MEMORANDUM = ["JS7CTHAD4C7H4DAS4H7D4SAHTD7SJCKDTS8CJHAC"]
+
 def anti_faro(deck):
     pass
 
@@ -99,7 +103,7 @@ class Deck(object):
         self.make_new_deck()
         self.make_mirror()
         self.out_faro(4)
-##        self.cards = self.cards[1:12]+list(self.cards[0])+self.cards[12:]
+        self.cards = self.cards[1:12]+[self.cards[0]]+self.cards[12:]
 
     def clear(self):
         self.cards = []
