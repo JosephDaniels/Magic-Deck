@@ -9,6 +9,8 @@ import pygame
 
 import time
 
+import sys
+
 from pygame.locals import *
 
 ## CARD VALUES AND SUITS ##
@@ -92,11 +94,11 @@ class Deck(object):
         card_indexes = [deck_order[i:i+2] for i in range(0, len(deck_order), 2)]
         self.construct_deck(card_indexes)
 
-    def create_order(self):
+    def create_deck_order(self):
         deck_order = ""
         for card in self.cards:
             deck_order+=str(card)
-        return deck_order 
+        return deck_order
 
     def make_mirror(self):
         ## Works on a deck in NDO
@@ -170,13 +172,14 @@ if __name__ == "__main__":
     example_deck = Deck()
     example_deck.create_deck_from(MEMORANDUM)
 
-    deck_order = deck.create_order()
-    example_deck_order = example_deck.create_order()
+    deck_order = deck.create_deck_order()
+    example_deck_order = example_deck.create_deck_order()
 
     if deck_order == example_deck_order:
         print "The decks perfectly match!"
     else:
-        print deck_order, example_deck_order
+        print deck_order
+        print example_deck_order
 
     
     while showtime == True:
@@ -188,6 +191,7 @@ if __name__ == "__main__":
                     """)
                     pygame.quit()
                     showtime=False
+                    sys.exit()
             elif event.type==QUIT: pygame.display.quit()
             elif event.type==VIDEORESIZE:
                 screen=pygame.display.set_mode(event.dict['size'],HWSURFACE|DOUBLEBUF|RESIZABLE)
