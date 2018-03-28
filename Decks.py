@@ -104,6 +104,7 @@ class Deck(object):
         self.make_mirror()
         self.out_faro(4)
         self.cards = self.cards[1:12]+[self.cards[0]]+self.cards[12:]
+        self.cards = self.cards[44:]+self.cards[0:44]
 
     def clear(self):
         self.cards = []
