@@ -93,7 +93,7 @@ class Deck(object):
         self.clear()
         self.construct_deck([deck_order[i:i+2] for i in range(0, len(deck_order), 2)])
 
-    def create_deckstring(self):
+    def return_deckstring(self):
         deck_order = ""
         for card in self.cards:
             deck_order+=str(card)
