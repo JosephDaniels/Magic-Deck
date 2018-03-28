@@ -57,6 +57,9 @@ class Card(object):
         self.suit = card_index[1]
         self.image = pygame.transform.scale(pygame.image.load("card_images/"+CARD_VALUE_DICT[card_index[0]]+"of"+CARD_SUIT_DICT[card_index[1]]+".png"), (87,122))
 
+    def __str__(self):
+        return self.value+self.suit
+
 class Deck(object):
     def __init__(self):
         self.cards = []
@@ -88,6 +91,12 @@ class Deck(object):
         self.clear()
         card_indexes = [deck_order[i:i+2] for i in range(0, len(deck_order), 2)]
         self.construct_deck(card_indexes)
+
+    def create_order(self):
+        deck_order = ""
+        for card in self.cards:
+            deck_order+=str(card)
+        return deck_order 
 
     def make_mirror(self):
         ## Works on a deck in NDO
@@ -160,6 +169,15 @@ if __name__ == "__main__":
 
     example_deck = Deck()
     example_deck.create_deck_from(MEMORANDUM)
+
+    deck_order = deck.create_order()
+    example_deck_order = example_deck.create_order()
+
+    if deck_order == example_deck_order:
+        print "The decks perfectly match!"
+    else:
+        print deck_order, example_deck_order
+
     
     while showtime == True:
         for event in pygame.event.get():
