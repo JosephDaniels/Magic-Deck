@@ -49,6 +49,11 @@ NDO_SUITS = ["H", "C", "D", "S"] ## New Deck Order. Bicycle suit order from out 
 ## DECK CONSTANTS
 
 MEMORANDUM = "JS7CTHAD4C7H4DAS4H7D4SAHTD7SJCKDTS8CJHACKS5C8H3DQSKH9CQH6C9H2D3C6H5D2S3H8D5SKCJD8STC2C5H6D3S2H9D6SQCQD9S"
+EIGHT_KINGS = "8CKH3STD2C7H9S5DQC4HAS6DJC8HKS3DTC2H7S9D5CQH4SAD6CJH8SKD3CTH2S7D9C5HQS4DAC6HJS8DKC3HTS2D7C9H5SQD4CAH6SJD"
+SI_STEBBINS = "AC4H7STDKC3H6S9DQC2H5S8DJCAH4S7DTCKH3S6D9CQH2S5D8CJHAS4D7CTHKS3D6C9HQS2D5C8HJSAD4C7HTSKD3C6H9SQD2C5H8SJD"
+
+
+flatten = lambda l: [i for s in l for i in s]
 
 class Card(object):
     def __init__(self,card_index):
@@ -72,23 +77,26 @@ class Deck(object):
 
     def make_new_deck(self):
         ## Makes a deck in NDO
-        top_half, bottom_half = self.cut_the(self.make_a_deck_in(NDO_SUITS))
+        self.make_a_deck_in(NDO_SUITS)
+        ## Cut the Cards into top and bottom sections
+        top_half, bottom_half = self.cut_the(self.cards)
         ## Reverse the bottom half, so we see the ace of spades. AK AK KA KA
         new_deck = top_half + bottom_half[0:13][::-1] + bottom_half[13:26][::-1]
-        self.construct_deck(new_deck)
+        self.construct_(new_deck)
 
     def make_a_deck_in(self,suit_order):
         ## Makes a deck in a specific suit order, AK AK AK AK
-        return [value+suit for suit in suit_order for value in CARD_VALUES]
+        card_indexes = [value+suit for suit in suit_order for value in CARD_VALUES]
+        self.construct_from(card_indexes)
 
-    def construct_deck(self,card_indexes):
+    def construct_from(self,card_indexes):
         for card_index in card_indexes:
             card = Card(card_index)
             self.add_card(card)
             
     def create_deck_from(self,deck_order):
         self.clear()
-        self.construct_deck([deck_order[i:i+2] for i in range(0, len(deck_order), 2)])
+        self.construct_from([deck_order[i:i+2] for i in range(0, len(deck_order), 2)])
 
     def return_deckstring(self):
         deck_order = ""
@@ -123,6 +131,20 @@ class Deck(object):
         self.cards = self.cards[0:24]+self.cards[34:]+self.cards[24:34]
         self.cards = self.cards[0:24]+[self.cards[27]]+self.cards[24:27]+self.cards[28:]
 
+    def make_si_stebbins(self):
+        top_half, bottom_half = self.cut_the(self.cards)
+        clubs, hearts = self.cut_the(top_half)
+        spades, diamonds = self.cut_the(bottom_half)
+        clubs, hearts, spades, diamonds = clubs[::-1],hearts[::-1],spades[::-1],diamonds[::-1]
+        clubs = [clubs[12]]+clubs[0:12]
+        hearts = hearts[9:]+hearts[0:9]
+        spades = spades[6:]+spades[0:6]
+        diamonds = diamonds[3:]+diamonds[0:3]
+        new_deck = []
+        for a,b,c,d in zip(clubs,hearts,spades,diamonds):
+            new_deck.extend([a,b,c,d])
+        self.cards = new_deck
+
     def clear(self):
         self.cards = []
 
@@ -130,14 +152,13 @@ class Deck(object):
         top_half = len(deck)/2
         return deck[:top_half], deck[top_half:]
 
-    def out_faro(self,faro_number):
+    def outfaro(self,faro_number=1):
         for shuffles in range(faro_number):
-            flatten = lambda l: [i for s in l for i in s]
             ## A shuffle that cuts the deck in half and performs an out faro,
             ## This leaves the Ace of spades on bottom and Ace of Clubs on top.
             self.cards = flatten([[x, y] for x, y in zip(*self.cut_the(self.cards))])
 
-    def anti_faro(self,antifaro_number):
+    def antifaro(self,antifaro_number=1):
         for shuffles in range(antifaro_number):
             top_half = []
             bottom_half = []
@@ -171,20 +192,23 @@ if __name__ == "__main__":
     ## Prepare the Deck
 
     deck = Deck()
-    deck.make_new_deck()
-    deck.mirror()
-    deck.anti_faro(4)
+    deck.make_a_deck_in(CHASED_SUITS)
+    deck.make_si_stebbins()
+    deck.antifaro(2)
+
     
+##    deck.mirror()
 ##    deck.memorandum()
-##
-##    example_deck = Deck()
-##    example_deck.create_deck_from(MEMORANDUM)
-##
-##    deck_order = deck.return_deckstring()
-##    example_deck_order = example_deck.return_deckstring()
-##
-##    if deck_order == example_deck_order:
-##        print "The decks perfectly match!"
+
+    example_deck = Deck()
+    example_deck.create_deck_from(EIGHT_KINGS)
+
+    deck_order = deck.return_deckstring()
+    example_deck_order = example_deck.return_deckstring()
+    print deck_order
+
+    if deck_order == example_deck_order:
+        print "The decks perfectly match!"
 ##    else:
 ##        print deck_order
 ##        print example_deck_order
@@ -206,10 +230,10 @@ if __name__ == "__main__":
             for card in deck.cards:
                 screen.blit(card.image, (horizontal_adjustment,200))
                 horizontal_adjustment+=15
-##            horizontal_adjustment = 85
-##            for card in example_deck.cards:
-##                screen.blit(card.image, (horizontal_adjustment,400))
-##                horizontal_adjustment+=15
+            horizontal_adjustment = 85
+            for card in example_deck.cards:
+                screen.blit(card.image, (horizontal_adjustment,400))
+                horizontal_adjustment+=15
         pygame.display.flip()
         time.sleep(0.03) #Frame limiter at 30 milliseconds
     pygame.quit()
