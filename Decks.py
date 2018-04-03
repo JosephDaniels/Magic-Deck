@@ -59,7 +59,12 @@ class Card(object):
     def __init__(self,card_index):
         self.value = card_index[0]
         self.suit = card_index[1]
-        self.image = pygame.transform.scale(pygame.image.load("card_images/"+CARD_VALUE_DICT[card_index[0]]+"of"+CARD_SUIT_DICT[card_index[1]]+".png"), (87,122))
+        self.face = pygame.transform.scale(pygame.image.load("card_images/"+CARD_VALUE_DICT[card_index[0]]+"of"+CARD_SUIT_DICT[card_index[1]]+".png"), (87,122))
+##        self.back = pygame.transform.scale(pygame.image.load("card_images/RedDotsCardBack.png"), (87,122))
+        self.dealt = False
+
+    def deal(self):
+        self.dealt = True
 
     def __str__(self):
         return self.value+self.suit
@@ -75,14 +80,14 @@ class Deck(object):
         if card in self.cards:
             self.cards.remove(card)
 
-    def make_new_deck(self):
+    def new_deck_order(self):
         ## Makes a deck in NDO
         self.make_a_deck_in(NDO_SUITS)
         ## Cut the Cards into top and bottom sections
         top_half, bottom_half = self.cut_the(self.cards)
         ## Reverse the bottom half, so we see the ace of spades. AK AK KA KA
         new_deck = top_half + bottom_half[0:13][::-1] + bottom_half[13:26][::-1]
-        self.construct_(new_deck)
+        self.cards = new_deck
 
     def make_a_deck_in(self,suit_order):
         ## Makes a deck in a specific suit order, AK AK AK AK
@@ -90,6 +95,7 @@ class Deck(object):
         self.construct_from(card_indexes)
 
     def construct_from(self,card_indexes):
+        self.cards = []
         for card_index in card_indexes:
             card = Card(card_index)
             self.add_card(card)
@@ -120,9 +126,8 @@ class Deck(object):
 
     def memorandum(self):
         ## Returns a deck in Memorandum Stack.
-        ## For now, it returns a standard faro 4 deck without the adjustment.
         self.clear()
-        self.make_new_deck()
+        self.new_deck_order()
         self.mirror()
         self.out_faro(4)
         self.cards = self.cards[1:12]+[self.cards[0]]+self.cards[12:]
@@ -152,13 +157,13 @@ class Deck(object):
         top_half = len(deck)/2
         return deck[:top_half], deck[top_half:]
 
-    def outfaro(self,faro_number=1):
+    def out_faro(self,faro_number=1):
         for shuffles in range(faro_number):
             ## A shuffle that cuts the deck in half and performs an out faro,
             ## This leaves the Ace of spades on bottom and Ace of Clubs on top.
             self.cards = flatten([[x, y] for x, y in zip(*self.cut_the(self.cards))])
 
-    def antifaro(self,antifaro_number=1):
+    def anti_faro(self,antifaro_number=1):
         for shuffles in range(antifaro_number):
             top_half = []
             bottom_half = []
@@ -191,15 +196,14 @@ if __name__ == "__main__":
 
     ## Prepare the Deck
 
+##    How to make a deck in Si Stebbins
+##    deck.make_a_deck_in(CHASED_SUITS)
+##    deck.make_si_stebbins()
+
     deck = Deck()
-    deck.make_a_deck_in(CHASED_SUITS)
-    deck.make_si_stebbins()
-    deck.antifaro(2)
+    deck.memorandum()
 
-    
-##    deck.mirror()
-##    deck.memorandum()
-
+##    How to make eight kings
     example_deck = Deck()
     example_deck.create_deck_from(EIGHT_KINGS)
 
@@ -228,11 +232,11 @@ if __name__ == "__main__":
                 screen.blit(pygame.transform.scale(background,event.dict['size']),(0,0))
             horizontal_adjustment = 85
             for card in deck.cards:
-                screen.blit(card.image, (horizontal_adjustment,200))
+                screen.blit(card.face, (horizontal_adjustment,200))
                 horizontal_adjustment+=15
             horizontal_adjustment = 85
             for card in example_deck.cards:
-                screen.blit(card.image, (horizontal_adjustment,400))
+                screen.blit(card.face, (horizontal_adjustment,400))
                 horizontal_adjustment+=15
         pygame.display.flip()
         time.sleep(0.03) #Frame limiter at 30 milliseconds
