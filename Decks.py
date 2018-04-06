@@ -13,6 +13,13 @@ import sys
 
 from pygame.locals import *  ## Import stuff we don't need
 
+## Gui Library Imports
+
+import math, glob
+
+from gui import *
+
+
 ## CARD VALUES AND SUITS ##
 
 CARD_VALUES = ["A","2","3","4","5","6","7","8","9","T","J","Q","K"]
@@ -56,6 +63,16 @@ SI_STEBBINS = "AC4H7STDKC3H6S9DQC2H5S8DJCAH4S7DTCKH3S6D9CQH2S5D8CJHAS4D7CTHKS3D6
 
 flatten = lambda l: [i for s in l for i in s] ## Takes multiple decks and assembles them into one
 
+
+#
+# Globals
+#
+
+deck = None
+hands = []
+text_edit = None
+
+
 ## Our mission is to create a Deck Instance that mimics a real deck.
 
 # We Create a deck instance, it is filled with cards, and it maintains an order.
@@ -83,6 +100,12 @@ class Card(object):
     def deal(self):
         self.dealt = True ## What does this do?
 
+    def show(self):
+        self.face_up = True
+
+    def hide(self):
+        self.face_up = False
+
     def render(self, screen, position):
         if self.face_up == True:
             screen.blit(self.face,position)
@@ -96,7 +119,7 @@ class Deck(object):
     ''' Handles the card objects and contains the deck order.'''
     def __init__(self):
         self.cards = []
-        self.new_deck_order()
+        self.make_new_deck_order()
 
 
     def add_card(self, card):
@@ -108,7 +131,16 @@ class Deck(object):
             self.cards.remove(card)
 
 
-    def new_deck_order(self):
+    def show_all(self):
+        for card in self.cards:
+            card.show()
+
+    def hide_all(self):
+        for card in self.cards:
+            card.hide()
+
+
+    def make_new_deck_order(self):
         ## Makes a deck in NDO
         self.make_a_deck_in(NDO_SUITS)
         ## Cut the Cards into top and bottom sections
@@ -162,9 +194,9 @@ class Deck(object):
     def memorandum(self):
         ## Sets the deck in Memorandum Stack.
         self.clear()
-        self.new_deck_order()
+        self.make_new_deck_order()
         self.mirror()
-        self.out_faro(4)
+        self.outfaro(4)
         self.cards = self.cards[1:12]+[self.cards[0]]+self.cards[12:]
         self.cards = self.cards[44:]+self.cards[0:44]
         self.cards = self.cards[0:34]+[self.cards[51]]+self.cards[34:51]
@@ -193,20 +225,23 @@ class Deck(object):
     def clear(self):
         self.cards = []
 
+    def cut(self, location=26):
+        top_half, bottom_half = self.cards[0:location], self.cards[location:]
+        self.cards = bottom_half+top_half
 
     def cut_the(self,deck):
         top_half = len(deck)/2
         return deck[:top_half], deck[top_half:]
 
 
-    def out_faro(self,faro_number=1):
+    def outfaro(self,faro_number=1):
         for shuffles in range(faro_number):
             ## A shuffle that cuts the deck in half and performs an out faro,
             ## This leaves the Ace of spades on bottom and Ace of Clubs on top.
             self.cards = flatten([[x, y] for x, y in zip(*self.cut_the(self.cards))])
 
 
-    def anti_faro(self,antifaro_number=1):
+    def antifaro(self,antifaro_number=1):
         for shuffles in range(antifaro_number):
             top_half = []
             bottom_half = []
@@ -224,7 +259,7 @@ class Deck(object):
         random.shuffle(self.cards)
 
 
-    def simulated_riffle(self, perfect_cut=False):
+    def riffle(self, perfect_cut=False):
         ## It should cut the deck, and simulate an imperfect riffle shuffle.
         ## That means that parts of the deck are left unshuffled and fall in clumps.
         if perfect_cut == False:
@@ -235,12 +270,14 @@ class Deck(object):
             
         shuffled_deck = []
         cards_left = True
-        alternation_flag = 0
+        alternation_flag = random.randint(0,1)
         while cards_left == True:
             ## Stop if done
             if len(top_half) == 0 or len(bottom_half) == 0:
-                shuffled_deck.extend(top_half)
-                shuffled_deck.extend(bottom_half)
+                if len(top_half) == 0:
+                    shuffled_deck.extend(bottom_half)
+                if len(bottom_half) == 0:
+                    shuffled_deck.extend(top_half)
                 cards_left = False
             
             chunk = random.randint(1,4)
@@ -264,41 +301,289 @@ class Hand(object):
     def add_card(self, card):
         self.cards.append(card)
 
+    def show_hand(self):
+        for card in self.cards:
+            card.show()
 
-## PROGRAM MAIN LOOP ##
+    def hide_hand(self):
+        for card in self.cards:
+            card.hide()
 
-showtime = True
-pygame.init()
 
-if __name__ == "__main__":
-    ## Begin Screen Setup
-    screen=pygame.display.set_mode((1024,768),HWSURFACE|DOUBLEBUF|RESIZABLE)
+# create the view, ie the tree of widgets
+def create_widgets():
+
+    global text_edit
     
-    background=pygame.image.load("backgrounds/example.png")#You need an example picture in the same folder as this file!
-   
-    screen.blit(pygame.transform.scale(background,(1024,768)),(0,0))
+    frame = Frame()
+    frame.x = 200
+    frame.y = 500
+    frame.width = 625
+    frame.height = 200
+    
+    button = Button(frame, ident="new_btn", text="New")
+    button.x = 225
+    button.y = 520
+    button.width = 130
+    button.height = 40
 
-    pygame.display.flip()
+    button = Button(frame, ident="save_btn", text="Save")
+    button.x = 225
+    button.y = 560
+    button.width = 130
+    button.height = 40
+    
+    button = Button(frame, ident="load_btn", text="Load")
+    button.x = 225
+    button.y = 600
+    button.width = 130
+    button.height = 40
+
+    button = Button(frame, ident="faro_btn", text="Faro")
+    button.x = 375
+    button.y = 520
+    button.width = 130
+    button.height = 40
+
+    button = Button(frame, ident="antifaro_btn", text="Antifaro")
+    button.x = 375
+    button.y = 560
+    button.width = 130
+    button.height = 40
+
+    button = Button(frame, ident="cut_btn", text="Cut")
+    button.x = 375
+    button.y = 600
+    button.width = 130
+    button.height = 40
+
+    button = Button(frame, ident="mirror_btn", text="Mirror")
+    button.x = 225
+    button.y = 640
+    button.width = 130
+    button.height = 40
+
+    button = Button(frame, ident="riffle_btn", text="Riffle")
+    button.x = 525
+    button.y = 520
+    button.width = 130
+    button.height = 40
+
+    button = Button(frame, ident="wash_btn", text="Wash")
+    button.x = 525
+    button.y = 560
+    button.width = 130
+    button.height = 40
+
+    button = Button(frame, ident="deal_btn", text="Deal")
+    button.x = 525
+    button.y = 600
+    button.width = 130
+    button.height = 40
+
+    button = Button(frame, ident="next", text="Next")
+    button.x = 675
+    button.y = 520
+    button.width = 130
+    button.height = 40
+
+    button = Button(frame, ident="show_btn", text="Show")
+    button.x = 675
+    button.y = 560
+    button.width = 130
+    button.height = 40
+
+    button = Button(frame, ident="hide_btn", text="Hide")
+    button.x = 675
+    button.y = 600
+    button.width = 130
+    button.height = 40
+
+    label = Label(frame, text="Parameter:")
+    label.x = 350
+    label.y = 650
+    
+    text_edit = TextEdit(frame, ident="name_edt", text="(numbers only)")
+    text_edit.text = "What the?"
+    text_edit.x = 500
+    text_edit.y = 650
+
+    # the card table
+    table = Table(frame, ident="card_table", deck = deck, hands = hands)
+    return frame
+
+class Echo(object):
+    def on_echo(self, evt):
+        print "echo:"
+        print evt.text
+        
+    def on_keypress(self, evt):
+        print evt.key
+
+
+class Table(Widget):
+
+    def __init__(self, parent=None, deck = None, hands=[], **kwargs):
+        super(Table, self).__init__(parent, **kwargs)
+        self.x = 0
+        self.y = 0
+        self.width = 1024
+        self.height = 600
+        self.color = (160,160,160)
+        self.border_color = (255,255,255)
+        self.deck = deck
+        self.hands = hands
+
+        
+    def render(self, surface):
+##        surface.fill(self.color, (self.x+1, self.y+1, self.width-2, self.height-2))
+##        pygame.draw.lines(surface,
+##                          self.border_color, True,
+##                          ((self.x, self.y),
+##                           (self.x+self.width, self.y),
+##                           (self.x+self.width, self.y+self.height),
+##                           (self.x, self.y+self.height)))
+        horizontal_adjustment = 85
+        for card in self.deck.cards:
+            card.render(surface, (horizontal_adjustment,200))
+            horizontal_adjustment+=15
+        if hands != []:
+            for y, hand in enumerate(self.hands):
+                for x, card in enumerate(hand.cards):
+                    card.render(surface, (x*15+150+y*150,300))
+
+        
+class TestController(GUIController):
+    
+    # event handlers
+
+    def on_clicked_from_new_btn(self, evt):
+        global deck
+        deck.make_new_deck_order()
+        self.ev_manager.post_event("gui_redraw")
+
+
+    def on_clicked_from_save_btn(self, evt):
+        print "Saving has failed. Save has not occurred."
+
+
+    def on_clicked_from_load_btn(self, evt):
+        print "Loading failed."
+
+
+    def on_clicked_from_mirror_btn(self,evt):
+        print "Did the mirror function. It's only useful on NDO."
+        global deck
+        deck.mirror()
+        self.ev_manager.post_event("gui_redraw")
+
+    def on_clicked_from_faro_btn(self, evt):
+        print "This will execute faro code"
+        global deck
+        global text_edit
+        if text_edit.text != "":
+            try:
+                faro_count = int(text_edit.text)
+                deck.outfaro(faro_count)
+            except ValueError:
+                deck.outfaro()
+        else:
+            deck.outfaro()
+        self.ev_manager.post_event("gui_redraw")
+
+
+    def on_clicked_from_antifaro_btn(self, evt):
+        print "This will execute antifaro"
+        global deck
+        global text_edit
+        if text_edit.text != "":
+            try:
+                antifaro_count = int(text_edit.text)
+                deck.antifaro(antifaro_count)
+            except ValueError:
+                deck.antifaro()
+        else:
+            deck.antifaro()
+        self.ev_manager.post_event("gui_redraw")
+
+
+    def on_clicked_from_cut_btn(self, evt):
+        print "cutting the deck, if parameter = None, then cut exact at 26 (half)"
+        global deck
+        global text_edit
+        if text_edit.text != "":
+            try:
+                cut_location = int(text_edit.text)
+                deck.cut(location=cut_location)
+            except ValueError:
+                deck.cut()
+        else:
+            deck.cut()
+        self.ev_manager.post_event("gui_redraw")
+
+    def on_clicked_from_riffle_btn(self, evt):
+        print "simulated riffle shuffle button clicked"
+        global deck
+        deck.riffle()
+        self.ev_manager.post_event("gui_redraw")
+
+
+    def on_clicked_from_wash_btn(self, evt):
+        print "GHSHSHSHSHSERKRK I am a washing machine"
+        global deck
+        deck.shuffle()
+        self.ev_manager.post_event("gui_redraw")
+
+
+    def on_clicked_from_deal_btn(self, evt):
+        global deck
+        global hands
+        
+        card_count = 5*4
+        current_hand = 0
+        if len(deck.cards) > card_count:
+            while card_count > 0:
+                hands[current_hand].add_card(deck.cards.pop(0))
+                current_hand+=1
+                if current_hand == 4:
+                    current_hand = 0
+                card_count -= 1
+        else:
+            print "Not enough cards left in the deck."
+            
+        self.ev_manager.post_event("gui_redraw")
+
+
+    def on_clicked_from_next_btn(self, evt):
+        print "Attempting to go next..."
+
+
+    def on_clicked_from_show_btn(self, evt):
+        global deck
+        deck.show_all()
+        self.ev_manager.post_event("gui_redraw")
+
+
+    def on_clicked_from_hide_btn(self, evt):
+        global deck
+        deck.hide_all()
+        self.ev_manager.post_event("gui_redraw")
+
+        
+    def on_clicked_from_any(self, evt):
+        print "generic clicked"
+
+
+##    def on_keypress(self, evt):
+##        key = pygame.key.name(evt.key)
+##        pygame.quit()
+##        sys.exit()
 
     ## Prepare the Deck
 
 ##    How to make a deck in Si Stebbins
 ##    deck.make_a_deck_in(CHASED_SUITS)
 ##    deck.make_si_stebbins()
-
-    deck = Deck()
-    deck.memorandum()
-    deck.cards = deck.cards[0:3][::-1]+deck.cards[3:]
-
-    hands = [Hand() for h in range(4)]
-    card_count = 5*4
-    current_hand = 0
-    while card_count > 0:
-        hands[current_hand].add_card(deck.cards.pop(0))
-        current_hand+=1
-        if current_hand == 4:
-            current_hand = 0
-        card_count -= 1
 
 ## Simulate dealing 5 card hands to 4 different players.
     
@@ -316,36 +601,41 @@ if __name__ == "__main__":
 ##        print "The decks perfectly match!"
 ##    else:
 ##        print deck_order
-##        print example_deck_order
+##        print example_deck_order     
 
-    while showtime == True:
-        for event in pygame.event.get():
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_ESCAPE:
-                    print ("""
-                    Escape Key Detected. Quitting the App.
-                    """)
-                    pygame.quit()
-                    sys.exit()
-            elif event.type==QUIT: pygame.display.quit()
-            elif event.type==VIDEORESIZE:
-                screen=pygame.display.set_mode(event.dict['size'],HWSURFACE|DOUBLEBUF|RESIZABLE)
-                screen.blit(pygame.transform.scale(background,event.dict['size']),(0,0))
-            horizontal_adjustment = 85
-            for card in deck.cards:
-                card.face_up = False
-            for card in deck.cards:
-                card.render(screen,(horizontal_adjustment,200))
-                horizontal_adjustment+=15
-            for y, hand in enumerate(hands):
-                for x, card in enumerate(hand.cards):
-                    card.render(screen,(x*15+150+y*150,300))
-##            horizontal_adjustment = 85
-##            for card in example_deck.cards:
-##                screen.blit(card.face, (horizontal_adjustment,400))
-##                horizontal_adjustment+=15
-        pygame.display.flip()
-        time.sleep(0.03) #Frame limiter at 30 milliseconds
-    pygame.quit()
+## PROGRAM MAIN LOOP ##
+        
+def run_program():
+    global deck, hands
+
+    deck = Deck()
+    deck.make_new_deck_order()
+
+    hands = [Hand() for h in range(4)]
+    
+##    deck.memorandum()
+##    deck.cards = deck.cards[0:3][::-1]+deck.cards[3:]
+##    deck.hide_all()
+    
+    pygame.init()
+
+    screen=pygame.display.set_mode((1024,768),HWSURFACE|DOUBLEBUF|RESIZABLE)
+    background=pygame.image.load("backgrounds/example.png")#You need an example picture in the same folder as this file!
+    screen.blit(pygame.transform.scale(background,(1024,768)),(0,0))
+    
+    em = EventManager() # message hub for events
+    echo = Echo()
+    em.register(echo)
+    
+    controller = TestController(em, screen)
+
+    view = create_widgets()
+    controller.set_root(view)
+    controller.start()
+
+    em.run()
+
+if __name__ == "__main__":
+    run_program()
 
 
