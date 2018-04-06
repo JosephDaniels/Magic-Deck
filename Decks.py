@@ -259,12 +259,12 @@ class Deck(object):
         random.shuffle(self.cards)
 
 
-    def riffle(self, perfect_cut=False):
+    def riffle(self, perfect_cut=True):
         ## It should cut the deck, and simulate an imperfect riffle shuffle.
         ## That means that parts of the deck are left unshuffled and fall in clumps.
         if perfect_cut == False:
             cut_location = 26+random.randint(-5,5)
-        else:
+        elif perfect_cut == True:
             cut_location = 26
         top_half, bottom_half = self.cards[0:cut_location], self.cards[cut_location:]
             
@@ -301,11 +301,11 @@ class Hand(object):
     def add_card(self, card):
         self.cards.append(card)
 
-    def show_hand(self):
+    def show(self):
         for card in self.cards:
             card.show()
 
-    def hide_hand(self):
+    def hide(self):
         for card in self.cards:
             card.hide()
 
@@ -339,6 +339,12 @@ def create_widgets():
     button.width = 130
     button.height = 40
 
+    button = Button(frame, ident="clear_btn", text="Clear")
+    button.x = 225
+    button.y = 640
+    button.width = 130
+    button.height = 40
+
     button = Button(frame, ident="faro_btn", text="Faro")
     button.x = 375
     button.y = 520
@@ -354,12 +360,6 @@ def create_widgets():
     button = Button(frame, ident="cut_btn", text="Cut")
     button.x = 375
     button.y = 600
-    button.width = 130
-    button.height = 40
-
-    button = Button(frame, ident="mirror_btn", text="Mirror")
-    button.x = 225
-    button.y = 640
     button.width = 130
     button.height = 40
 
@@ -381,7 +381,7 @@ def create_widgets():
     button.width = 130
     button.height = 40
 
-    button = Button(frame, ident="next", text="Next")
+    button = Button(frame, ident="mirror_btn", text="Mirror")
     button.x = 675
     button.y = 520
     button.width = 130
@@ -399,13 +399,12 @@ def create_widgets():
     button.width = 130
     button.height = 40
 
-    label = Label(frame, text="Parameter:")
-    label.x = 350
+    label = Label(frame, text="Text Input:")
+    label.x = 425
     label.y = 650
     
-    text_edit = TextEdit(frame, ident="name_edt", text="(numbers only)")
-    text_edit.text = "What the?"
-    text_edit.x = 500
+    text_edit = TextEdit(frame, ident="name_edt", text="(enter here)")
+    text_edit.x = 550
     text_edit.y = 650
 
     # the card table
@@ -468,8 +467,22 @@ class TestController(GUIController):
 
 
     def on_clicked_from_load_btn(self, evt):
-        print "Loading failed."
+        print "Attempting to load from text input."
+        global text_edit
+        global deck
+        if text_edit.text.lower() == "eight kings":
+            deck.create_deck_from(EIGHT_KINGS)
+        if text_edit.text.lower() == "si stebbins":
+            deck.create_deck_from(SI_STEBBINS)
+        if text_edit.text.lower() == "memorandum":
+            deck.create_deck_from(MEMORANDUM)
+        self.ev_manager.post_event("gui_redraw")
 
+    def on_clicked_from_clear_btn(self, evt):
+        print "Cleared the text input."
+        global text_edit
+        text_edit.text = ""
+        self.ev_manager.post_event("gui_redraw")
 
     def on_clicked_from_mirror_btn(self,evt):
         print "Did the mirror function. It's only useful on NDO."
@@ -554,19 +567,23 @@ class TestController(GUIController):
         self.ev_manager.post_event("gui_redraw")
 
 
-    def on_clicked_from_next_btn(self, evt):
-        print "Attempting to go next..."
-
-
     def on_clicked_from_show_btn(self, evt):
         global deck
+        global hands
         deck.show_all()
+        for hand in hands:
+            for card in hand.cards:
+                card.show()
         self.ev_manager.post_event("gui_redraw")
 
 
     def on_clicked_from_hide_btn(self, evt):
         global deck
+        global hands
         deck.hide_all()
+        for hand in hands:
+            for card in hand.cards:
+                card.hide()
         self.ev_manager.post_event("gui_redraw")
 
         
