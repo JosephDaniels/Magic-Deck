@@ -48,6 +48,9 @@ class Deck(object):
     def add_card(self, card):
         self.cards.append(card)
 
+    def insert_card(self, card, position):
+        self.cards = self.cards[:position]+card+self.cards[position:]
+
     def remove_card(self, card):
         if card in self.cards:
             self.cards.remove(card)
@@ -143,8 +146,8 @@ class Deck(object):
     def infaro(self, faro_number=1):
         for shuffles in range(faro_number):
             """
-            A shuffle that cuts the deck in half and performs an out faro,
-            This leaves the Ace of spades on bottom and Ace of Clubs on top.
+            A shuffle that cuts the deck in half and performs an in-faro,
+            This put the King of Hearts on bottom and King of Diamonds on top.
             """
             z = self.cut_the(self.cards)
             self.cards = flatten([[y, x] for x, y in zip(*z)])
