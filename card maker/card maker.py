@@ -9,6 +9,22 @@ import math
 
 CARD_VALUES = ["A","2","3","4","5","6","7","8","9","T","J","Q","K"]
 
+CARD_VALUE_DICT = {
+    "A" : "Ace",
+    "2" : "Two",
+    "3" : "Three",
+    "4" : "Four",
+    "5" : "Five",
+    "6" : "Six",
+    "7" : "Seven",
+    "8" : "Eight",
+    "9" : "Nine",
+    "T": "Ten",
+    "J" : "Jack",
+    "Q" : "Queen",
+    "K" : "King"
+    }
+
 CARD_SUIT_DICT = {
     "C" : "Clubs",
     "H" : "Hearts",
@@ -106,7 +122,7 @@ class Background_Manager(object):
 
 
     def load_cards(self):
-        pass
+        card = pygame.image.load("card_images/BlankCard.png")
         print "failed to load cards."
     
     def load_backgrounds(self,num_images):
@@ -140,10 +156,11 @@ def main_program():
     
     #Startup
     
-    os.environ['SDL_VIDEO_CENTERED'] = '1'
+##    os.environ['SDL_VIDEO_CENTERED'] = '1'
     pygame.init()
-    infoObject = pygame.display.Info()
-    screen = pygame.display.set_mode((infoObject.current_w, infoObject.current_h),HWSURFACE|DOUBLEBUF|RESIZABLE)
+##    infoObject = pygame.display.Info()
+##    screen = pygame.display.set_mode((infoObject.current_w, infoObject.current_h),HWSURFACE|DOUBLEBUF|RESIZABLE)
+    screen = pygame.display.set_mode((1080,720),HWSURFACE|DOUBLEBUF|RESIZABLE)
     running = True
     location = (425,150)
     card = Card()
@@ -155,8 +172,12 @@ def main_program():
     print num_backgrounds
     background = None
 
-    bg_manager.resize(infoObject.current_w, infoObject.current_h)
+##    bg_manager.resize(infoObject.current_w, infoObject.current_h)
+    bg_manager.resize(bg_manager.get_current_image().get_width(), bg_manager.get_current_image().get_height())
     bg_manager.render(screen)
+
+    center = bg_manager.get_center(bg_manager.get_current_image())
+    print center
     
     #Main Loop
     while running == True:
@@ -186,7 +207,7 @@ def main_program():
 
                     
         bg_manager.render(screen)
-        card.render(screen,location)
+        card.render(screen,center)
         pygame.display.flip()
         time.sleep(0.033)
 

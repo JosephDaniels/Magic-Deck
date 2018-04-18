@@ -58,6 +58,8 @@ NDO_SUITS = ["H", "C", "D", "S"] ## New Deck Order. Bicycle suit order from out 
 MEMORANDUM = "JS7CTHAD4C7H4DAS4H7D4SAHTD7SJCKDTS8CJHACKS5C8H3DQSKH9CQH6C9H2D3C6H5D2S3H8D5SKCJD8STC2C5H6D3S2H9D6SQCQD9S"
 EIGHT_KINGS = "8CKH3STD2C7H9S5DQC4HAS6DJC8HKS3DTC2H7S9D5CQH4SAD6CJH8SKD3CTH2S7D9C5HQS4DAC6HJS8DKC3HTS2D7C9H5SQD4CAH6SJD"
 SI_STEBBINS = "AC4H7STDKC3H6S9DQC2H5S8DJCAH4S7DTCKH3S6D9CQH2S5D8CJHAS4D7CTHKS3D6C9HQS2D5C8HJSAD4C7HTSKD3C6H9SQD2C5H8SJD"
+MNEMONICA = "4C2H7D3C4H6DAS5H9S2SQH3DQC8H6S5S9HKC2DJH3S8S6HTC5DKD2C3H8D5CKSJD8CTSKHJC7STHAD4S7S4DAC9CJSQD7CQSTD6CAH9D"
+ARONSON = "JSKC5C2H9SAS3H6C8DACTS5H2DKD7D8C3SAD7S5SQDAH8S3D7HQH5D7C4HKH4DTDJCJHTCJD4STH6H3C2S9HKS6S4C8H9CQS6DQC2C9D"
 
 ## Helper Function
 
@@ -89,16 +91,12 @@ text_edit = None
 
 
 class Card(object):
-    def __init__(self,card_index):
+    def __init__(self, card_index):
         self.value = card_index[0]
         self.suit = card_index[1]
         self.face = pygame.transform.scale(pygame.image.load("card_images/"+CARD_VALUE_DICT[card_index[0]]+"of"+CARD_SUIT_DICT[card_index[1]]+".png"), (87,122))
         self.back = pygame.transform.scale(pygame.image.load("card_images/RedDotsCardBack.png"), (87,122))
-        self.dealt = False
         self.face_up = True
-
-    def deal(self):
-        self.dealt = True ## What does this do?
 
     def show(self):
         self.face_up = True
@@ -162,7 +160,7 @@ class Deck(object):
             card = Card(card_index)
             self.add_card(card)
 
-        
+
     def create_deck_from(self,deck_order):
         self.clear()
         self.construct_from([deck_order[i:i+2] for i in range(0, len(deck_order), 2)])
@@ -181,14 +179,14 @@ class Deck(object):
         self.cards = self.cards[13:26] + self.cards[0:13] + self.cards[26:52]
 
 
-    def print_me(self):
-        pretty_deck = []
-        for index, card in enumerate(self.cards):
-            new_card = list(card)
-            expanded_value = CARD_VALUE_DICT[new_card[0]]
-            expanded_suit = CARD_SUIT_DICT[new_card[1]]
-            pretty_deck.append(expanded_value+" of "+expanded_suit)
-        return pretty_deck
+##    def print_me(self):
+##        pretty_deck = []
+##        for index, card in enumerate(self.cards):
+##            new_card = list(card)
+##            expanded_value = CARD_VALUE_DICT[new_card[0]]
+##            expanded_suit = CARD_SUIT_DICT[new_card[1]]
+##            pretty_deck.append(expanded_value+" of "+expanded_suit)
+##        return pretty_deck
 
 
     def memorandum(self):
@@ -267,7 +265,7 @@ class Deck(object):
         elif perfect_cut == True:
             cut_location = 26
         top_half, bottom_half = self.cards[0:cut_location], self.cards[cut_location:]
-            
+
         shuffled_deck = []
         cards_left = True
         alternation_flag = random.randint(0,1)
@@ -279,19 +277,19 @@ class Deck(object):
                 if len(bottom_half) == 0:
                     shuffled_deck.extend(top_half)
                 cards_left = False
-            
+
             chunk = random.randint(1,4)
-            
+
             if alternation_flag == 0 and chunk <= len(top_half):
                 alternation_flag = 1
                 for i in range(chunk):
                     shuffled_deck.append(top_half.pop(0))
-                    
+
             if alternation_flag == 1 and chunk <= len(bottom_half):
                 alternation_flag = 0
                 for x in range(chunk):
                     shuffled_deck.append(bottom_half.pop(0))
-                    
+
         self.cards = shuffled_deck
 
 class Hand(object):
@@ -314,13 +312,13 @@ class Hand(object):
 def create_widgets():
 
     global text_edit
-    
+
     frame = Frame()
     frame.x = 200
     frame.y = 500
     frame.width = 625
     frame.height = 200
-    
+
     button = Button(frame, ident="new_btn", text="New")
     button.x = 225
     button.y = 520
@@ -332,7 +330,7 @@ def create_widgets():
     button.y = 560
     button.width = 130
     button.height = 40
-    
+
     button = Button(frame, ident="load_btn", text="Load")
     button.x = 225
     button.y = 600
@@ -402,7 +400,7 @@ def create_widgets():
     label = Label(frame, text="Text Input:")
     label.x = 425
     label.y = 650
-    
+
     text_edit = TextEdit(frame, ident="name_edt", text="(enter here)")
     text_edit.x = 550
     text_edit.y = 650
@@ -415,7 +413,7 @@ class Echo(object):
     def on_echo(self, evt):
         print "echo:"
         print evt.text
-        
+
     def on_keypress(self, evt):
         print evt.key
 
@@ -433,7 +431,7 @@ class Table(Widget):
         self.deck = deck
         self.hands = hands
 
-        
+
     def render(self, surface):
 ##        surface.fill(self.color, (self.x+1, self.y+1, self.width-2, self.height-2))
 ##        pygame.draw.lines(surface,
@@ -444,16 +442,16 @@ class Table(Widget):
 ##                           (self.x, self.y+self.height)))
         horizontal_adjustment = 85
         for card in self.deck.cards:
-            card.render(surface, (horizontal_adjustment,200))
+            card.render(surface, (horizontal_adjustment,150))
             horizontal_adjustment+=15
         if hands != []:
             for y, hand in enumerate(self.hands):
                 for x, card in enumerate(hand.cards):
                     card.render(surface, (x*15+150+y*150,300))
 
-        
+
 class TestController(GUIController):
-    
+
     # event handlers
 
     def on_clicked_from_new_btn(self, evt):
@@ -470,12 +468,19 @@ class TestController(GUIController):
         print "Attempting to load from text input."
         global text_edit
         global deck
-        if text_edit.text.lower() == "eight kings":
+        self.load_from_text_input()
+
+    def load_from_text_input(self):
+        if text_edit.text.lower() == "eight kings" or "8 kings":
             deck.create_deck_from(EIGHT_KINGS)
-        if text_edit.text.lower() == "si stebbins":
+        elif text_edit.text.lower() == "si stebbins":
             deck.create_deck_from(SI_STEBBINS)
-        if text_edit.text.lower() == "memorandum":
+        elif text_edit.text.lower() == "memorandum":
             deck.create_deck_from(MEMORANDUM)
+        elif text_edit.text.lower() == "mnemonica":
+            deck.create_deck_from(MNEMONICA)
+        elif text_edit.text.lower() == "aronson":
+            deck.create_deck_from(ARONSON)
         self.ev_manager.post_event("gui_redraw")
 
     def on_clicked_from_clear_btn(self, evt):
@@ -551,7 +556,7 @@ class TestController(GUIController):
     def on_clicked_from_deal_btn(self, evt):
         global deck
         global hands
-        
+
         card_count = 5*4
         current_hand = 0
         if len(deck.cards) > card_count:
@@ -563,7 +568,7 @@ class TestController(GUIController):
                 card_count -= 1
         else:
             print "Not enough cards left in the deck."
-            
+
         self.ev_manager.post_event("gui_redraw")
 
 
@@ -586,7 +591,7 @@ class TestController(GUIController):
                 card.hide()
         self.ev_manager.post_event("gui_redraw")
 
-        
+
     def on_clicked_from_any(self, evt):
         print "generic clicked"
 
@@ -603,7 +608,7 @@ class TestController(GUIController):
 ##    deck.make_si_stebbins()
 
 ## Simulate dealing 5 card hands to 4 different players.
-    
+
 ##    deck.memorandum()
 
 ##    How to make eight kings
@@ -618,32 +623,33 @@ class TestController(GUIController):
 ##        print "The decks perfectly match!"
 ##    else:
 ##        print deck_order
-##        print example_deck_order     
+##        print example_deck_order
 
 ## PROGRAM MAIN LOOP ##
-        
+
 def run_program():
     global deck, hands
 
     deck = Deck()
     deck.make_new_deck_order()
+##    deck.spit_it_out()
 
     hands = [Hand() for h in range(4)]
-    
+
 ##    deck.memorandum()
 ##    deck.cards = deck.cards[0:3][::-1]+deck.cards[3:]
 ##    deck.hide_all()
-    
+
     pygame.init()
 
     screen=pygame.display.set_mode((1024,768),HWSURFACE|DOUBLEBUF|RESIZABLE)
     background=pygame.image.load("backgrounds/example.png")#You need an example picture in the same folder as this file!
     screen.blit(pygame.transform.scale(background,(1024,768)),(0,0))
-    
+
     em = EventManager() # message hub for events
     echo = Echo()
     em.register(echo)
-    
+
     controller = TestController(em, screen)
 
     view = create_widgets()
@@ -654,5 +660,3 @@ def run_program():
 
 if __name__ == "__main__":
     run_program()
-
-
