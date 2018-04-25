@@ -1,9 +1,0 @@
-TODO:
-
-Add Aronson
-
-Add Mnemonica
-
-Add a feature/ Report a bug
-
-Taking a card a putting it a new place.
