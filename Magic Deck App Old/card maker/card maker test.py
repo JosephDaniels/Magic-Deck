@@ -1,138 +1,93 @@
-import pygame
-from pygame.locals import *
+from __future__ import division
+
 import time
 import sys
 import os, os.path
 import math
+import random
 
-CARD_VALUES = ["A","2","3","4","5","6","7","8","9","T","J","Q","K"]
+from lib.deck import Deck
 
-CARD_VALUE_DICT = {
-    "A" : "Ace",
-    "2" : "Two",
-    "3" : "Three",
-    "4" : "Four",
-    "5" : "Five",
-    "6" : "Six",
-    "7" : "Seven",
-    "8" : "Eight",
-    "9" : "Nine",
-    "T": "Ten",
-    "J" : "Jack",
-    "Q" : "Queen",
-    "K" : "King"
-    }
+import pygame
+from pygame.locals import *
 
-CARD_SUIT_DICT = {
-    "C" : "Clubs",
-    "H" : "Hearts",
-    "S" : "Spades",
-    "D" : "Diamonds"
-    }
+from PIL import Image, ImageDraw, ImageFont
 
-NDO_SUITS = ["H", "C", "D", "S"] ## New Deck Order. Bicycle suit order from out of the box.
+def alphamasked(img, green_screen_color):
+    """returns an image alpha masked so that pixels with the given
+       RGB green_screen_color are made transparent"""
+    new_image = img.convert_alpha()
+    mask_r, mask_g, mask_b = green_screen_color
+    width, height = img.get_size()
+    for x in range(width):
+        for y in range(height):
+            r,g,b,a = new_image.get_at((x,y))
+            if  r == mask_r and g == mask_g and b == mask_b:
+                new_image.set_at((x,y), (r,g,b,0))
+    return new_image
 
 
-class Card(object):
-    def __init__(self, card_index):
-        self.value = card_index[0]
-        self.suit = card_index[1]
+CARD_DIMENSION = (552, 768)
+CARD_PADDING = 16
+
+class CardWidget(object):
+    Font = ImageFont.truetype('fonts/open-sans/OpenSans-Regular.ttf', 99) # font size
+
+    def __init__(self, card):
+        self.card = card
         self.face = None
         self.back = None
         self.face_up = True
-        self.create_image()
 
-    def create_image(self):
-        card_image = pygame.Surface()
-        blank_img = pygame.transform.scale(pygame.image.load("card_images/BlankCard.png"), (350,488))
-        ace_img = alphamasked(pygame.image.load("card_images/A.png"), (255,255,255))
-        spade_img = alphamasked(pygame.image.load("card_images/spade.png"), (255,255,255))
-        self.blank_card_img = card_image
-        self.value_img = Ace_img
-        self.suit_img = Spade_img
-##        screen.blit(self.blank_card_img,(location))
-##        screen.blit(self.value_img, (location[0]+15,location[1]+15))
-##        screen.blit(self.suit_img, (location[0]+20,location[1]+100))
-##        screen.blit(pygame.transform.rotate(self.value_img, 180), (location[0]+275,location[1]+400))
-##        screen.blit(pygame.transform.rotate(self.suit_img, 180), (location[0]+280,location[1]+335))
-##        screen.blit(pygame.transform.scale(self.suit_img, (150,150)), (location[0]+100, location[1]+170))
+    def create_image(self, card_type="bicycle"):
+        img_w, img_h = CARD_DIMENSION
+        p = CARD_PADDING
 
+        self.image = Image.new("RGBA", (img_w, img_h), color=(255, 255, 255, 255))
+        if card_type == "bicycle":
+            fg = Image.open("card_images/{a}.png".format(a=self.card.value.upper()))
+            sz = fg.size
+            self.image.paste(fg, (p, p)) # top left
+            self.image.paste(fg.rotate(180), (img_w - sz[0] - p - p, img_h - sz[1] - p - p)) # bottom right
+            fg = Image.open("card_images/{b}.png".format(b=self.card.suit.upper()))
+            sz2 = fg.size
+            self.image.paste(fg, (p, p + p + sz[1])) # top left
+            self.image.paste(fg.rotate(180), (img_w - sz[0] - p - p, img_h - sz[1] - sz2[1] - p - p - p)) # bottom right
 
+        elif card_type == "index":
+            fg = Image.open("card_images/{a}.png".format(a=self.card.value.upper()))
+            sz = fg.size
+            sz = (sz[0]*4, sz[1]*4)
+            fg = fg.resize(sz, Image.ANTIALIAS)
+            self.image.paste(fg, (int(img_w / 2), p))
+
+            fg = Image.open("card_images/{b}.png".format(b=self.card.suit.upper()))
+            sz = fg.size
+            sz = (sz[0]*4, sz[1]*4)
+            fg = fg.resize(sz, Image.ANTIALIAS)
+            self.image.paste(fg, (int(img_w / 2), p + sz[0] + p)) # under top middle
+
+        else:
+            exception
+            return
+
+        self.image.save("image1.png")
+        self.face = pygame.image.load("image1.png")
 
     def show(self):
         self.face_up = True
 
-
     def hide(self):
         self.face_up = False
 
-
     def render(self, screen, position):
         if self.face_up == True:
-            screen.blit(self.face,position)
+            screen.blit(self.face, position)
         else:
-            screen.blit(self.back,position)
+            screen.blit(self.back, position)
 
     def __str__(self):
-        return self.value+self.suit
-
-class Deck(object):
-    ''' Handles the card objects and contains the deck order.'''
-    def __init__(self):
-        self.cards = []
-        self.make_new_deck_order()
-
-
-    def add_card(self, card):
-        self.cards.append(card)
-
-
-    def remove_card(self, card):
-        if card in self.cards:
-            self.cards.remove(card)
-
-
-    def show_all(self):
-        for card in self.cards:
-            card.show()
-
-
-    def hide_all(self):
-        for card in self.cards:
-            card.hide()
-
-
-    def make_new_deck_order(self):
-        ## Makes a deck in NDO
-        self.make_a_deck_in(NDO_SUITS)
-        ## Cut the Cards into top and bottom sections
-        top_half, bottom_half = self.cut_the(self.cards)
-        ## Reverse the bottom half, so we see the ace of spades. AK AK KA KA
-        new_deck = top_half + bottom_half[0:13][::-1] + bottom_half[13:26][::-1]
-        self.cards = new_deck
-
-
-    def make_a_deck_in(self,suit_order):
-        ## Makes a deck in a specific suit order, AK AK AK AK
-        card_indexes = [value+suit for suit in suit_order for value in CARD_VALUES]
-        self.construct_from(card_indexes)
-
-
-    def construct_from(self,card_indexes):
-        self.cards = []
-        for card_index in card_indexes:
-            card = Card(card_index)
-            self.add_card(card)
-
-
-    def create_deck_from(self,deck_order):
-        self.clear()
-        self.construct_from([deck_order[i:i+2] for i in range(0, len(deck_order), 2)])
-
-
-    def cut_the(self,deck):
-        top_half = len(deck)/2
-        return deck[:top_half], deck[top_half:]
+        return self.card.value+self.card.suit
 
 
 def main_loop():
@@ -140,11 +95,45 @@ def main_loop():
     d.make_new_deck_order()
     for card in d.cards:
         print str(card)
+
     pygame.init()
-    screen = pygame.display.set_mode((1080,720))
+    p = CARD_PADDING
+    screen = pygame.display.set_mode((CARD_DIMENSION[0]+p+p, CARD_DIMENSION[1]+p+p)) # in theory
+
+    i = 0
     running = True
-    while running = True:
-        
+
+    random_card_number = random.randint(0,51)
+    card = CardWidget(d.cards[random_card_number])
+    card.create_image(card_type="index")
+
+    while running == True:
+        screen.fill((0,0,0)) # black
+
+        # draw it
+        card.render(screen, (10, 10))
+
+        # more draw coded
+        for event in pygame.event.get():
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    pygame.quit()
+                    running = False
+                if event.key == pygame.K_RIGHT:
+
+                if event.key == pygame.K_LEFT:
+                    card.previous()
+
+            pygame.display.flip()
+
+        time.sleep(1 / 60) # 60 fps
+        i+=1
+
+        # quit after 5s
+        if i > 60 * 5:
+            running = False
+            pygame.quit()
+
 
 if __name__ == "__main__":
     main_loop()

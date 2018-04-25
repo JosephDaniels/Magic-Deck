@@ -61,7 +61,7 @@ class Card(object):
         self.blank_card_img = card_image
         self.value_img = Ace_img
         self.suit_img = Spade_img
-        
+
 
     def render(self, screen, location):
         screen.blit(self.blank_card_img,(location))
@@ -71,7 +71,7 @@ class Card(object):
         screen.blit(pygame.transform.rotate(self.suit_img, 180), (location[0]+280,location[1]+335))
         screen.blit(pygame.transform.scale(self.suit_img, (150,150)), (location[0]+100, location[1]+170))
 
-        
+
 class Background_Manager(object):
     def __init__(self, num_images):
         self.current_image = 0
@@ -90,14 +90,14 @@ class Background_Manager(object):
         self.area = (self.height * self.width)
         self.aspectRatio = (self.width/float(self.height))
 
-        
+
     def find_height(self,width):
         return int(width/float(self.aspectRatio))
 
 
     def find_width(self,height):
         return int(height*float(self.aspectRatio))
-        
+
 
     def get_current_image(self):
         return self.backgrounds[self.current_image]
@@ -111,7 +111,7 @@ class Background_Manager(object):
         self.set_size()
         self.resize()
 
-        
+
     def previous_img(self):
         if self.current_image == 0:
             self.current_image = len(self.backgrounds)-1
@@ -124,7 +124,7 @@ class Background_Manager(object):
     def load_cards(self):
         card = pygame.image.load("card_images/BlankCard.png")
         print "failed to load cards."
-    
+
     def load_backgrounds(self,num_images):
         for i in range(0,num_images):
             try:
@@ -147,15 +147,15 @@ class Background_Manager(object):
         self.width = x
         self.height = y
         self.cached_background = pygame.transform.scale(self.backgrounds[self.current_image],(self.width,self.height))
-        
+
 
     def render(self, screen, location=(0,0)):
         screen.blit(self.cached_background, location)
 
 def main_program():
-    
+
     #Startup
-    
+
 ##    os.environ['SDL_VIDEO_CENTERED'] = '1'
     pygame.init()
 ##    infoObject = pygame.display.Info()
@@ -178,15 +178,15 @@ def main_program():
 
     center = bg_manager.get_center(bg_manager.get_current_image())
     print center
-    
+
     #Main Loop
     while running == True:
         for event in pygame.event.get():
             background = bg_manager.get_current_image()
             bg_manager.screen_size = screen.get_size()
             if event.type==QUIT: pygame.display.quit()
-            
-            
+
+
             elif event.type==VIDEORESIZE:
                 bg_manager.screen_size = event.dict['size']
                 bg_manager.resize(bg_manager.screen_size[0],bg_manager.screen_size[1])
@@ -194,8 +194,8 @@ def main_program():
 ##                    width = bg_control.find_width(bg_control.screen_size[1])
 ##                elif bg_control.screen_size[1] > bg_control.width:
 ##                    height = bg_control.find_height(bg_control.screen_size[0])
-    
-                
+
+
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     pygame.quit()
@@ -205,7 +205,7 @@ def main_program():
                 if event.key == pygame.K_LEFT:
                     bg_manager.previous_img()
 
-                    
+
         bg_manager.render(screen)
         card.render(screen,center)
         pygame.display.flip()
