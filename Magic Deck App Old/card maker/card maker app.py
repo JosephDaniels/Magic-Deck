@@ -38,8 +38,8 @@ Config.set('graphics', 'multisamples', 16)
 from kivy.app import App
 from kivy.core.window import Window   # ignore warning E402
 
-CARD_DIMENSION = (1472, 2048)
-CARD_PADDING = 32
+CARD_DIMENSION = (736, 1024)
+CARD_PADDING = 16
 
 # Font = ImageFont.truetype('fonts/open-sans/OpenSans-Regular.ttf', 99) # font size
 
