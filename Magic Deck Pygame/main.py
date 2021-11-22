@@ -124,11 +124,11 @@ def create_widgets():
 
 class Echo(object):
     def on_echo(self, evt):
-        print "echo:"
-        print evt.text
+        print ("echo:")
+        print (evt.text)
 
     def on_keypress(self, evt):
-        print evt.key
+        print (evt.key)
 
 
 class Table(Widget):
@@ -174,11 +174,11 @@ class TestController(GUIController):
 
 
     def on_clicked_from_save_btn(self, evt):
-        print "Saving has failed. Save has not occurred."
+        print ("Saving has failed. Save has not occurred.")
 
 
     def on_clicked_from_load_btn(self, evt):
-        print "Attempting to load from text input."
+        print ("Attempting to load from text input.")
         global text_edit
         global deck
         self.load_from_text_input()
@@ -197,19 +197,19 @@ class TestController(GUIController):
         self.ev_manager.post_event("gui_redraw")
 
     def on_clicked_from_clear_btn(self, evt):
-        print "Cleared the text input."
+        print ("Cleared the text input.")
         global text_edit
         text_edit.text = ""
         self.ev_manager.post_event("gui_redraw")
 
     def on_clicked_from_mirror_btn(self,evt):
-        print "Did the mirror function. It's only useful on NDO."
+        print ("Did the mirror function. It's only useful on NDO.")
         global deck
         deck.mirror()
         self.ev_manager.post_event("gui_redraw")
 
     def on_clicked_from_faro_btn(self, evt):
-        print "This will execute faro code"
+        print ("This will execute faro code")
         global deck
         global text_edit
         if text_edit.text != "":
@@ -224,7 +224,7 @@ class TestController(GUIController):
 
 
     def on_clicked_from_antifaro_btn(self, evt):
-        print "This will execute antifaro"
+        print ("This will execute antifaro")
         global deck
         global text_edit
         if text_edit.text != "":
@@ -239,7 +239,7 @@ class TestController(GUIController):
 
 
     def on_clicked_from_cut_btn(self, evt):
-        print "cutting the deck, if parameter = None, then cut exact at 26 (half)"
+        """Cut the deck. If parameter = None, then cut exact at 26 (half)"""
         global deck
         global text_edit
         if text_edit.text != "":
@@ -253,14 +253,14 @@ class TestController(GUIController):
         self.ev_manager.post_event("gui_redraw")
 
     def on_clicked_from_riffle_btn(self, evt):
-        print "simulated riffle shuffle button clicked"
+        print ("simulated riffle shuffle button clicked")
         global deck
         deck.riffle()
         self.ev_manager.post_event("gui_redraw")
 
 
     def on_clicked_from_wash_btn(self, evt):
-        print "GHSHSHSHSHSERKRK I am a washing machine"
+        print ("GHSHSHSHSHSERKRK I am a washing machine")
         global deck
         deck.shuffle()
         self.ev_manager.post_event("gui_redraw")
@@ -280,7 +280,7 @@ class TestController(GUIController):
                     current_hand = 0
                 card_count -= 1
         else:
-            print "Not enough cards left in the deck."
+            print ("Not enough cards left in the deck.")
 
         self.ev_manager.post_event("gui_redraw")
 
@@ -306,7 +306,7 @@ class TestController(GUIController):
 
 
     def on_clicked_from_any(self, evt):
-        print "generic clicked"
+        print ("generic clicked")
 
 
 ##    def on_keypress(self, evt):

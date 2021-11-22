@@ -217,6 +217,7 @@ class Deck(object):
 
     def cut_the(self,deck):
         top_half = len(deck)/2
+        top_half = int(top_half)
         return deck[:top_half], deck[top_half:]
 
 
@@ -238,7 +239,7 @@ class Deck(object):
 
 
     def spit_it_out(self):
-        print self.print_me()
+        print (self.print_me())
 
 
     def shuffle(self):

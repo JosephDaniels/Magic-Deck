@@ -251,7 +251,7 @@ class CardMakerApp(App):
         self.deck = Deck()
         self.deck.make_new_deck_order()
         for card in self.deck.cards:
-            print str(card)
+            print (str(card))
 
         # root = our main program window
         root = CardMaker(deck=self.deck, do_rotation=False, do_scale=False)

@@ -47,7 +47,7 @@ class Card(object):
         return self.value + self.suit
 
     def __str__(self):
-        return Card.VALUES[self.value]+Card.SUITS[self.suit]
+        return ("%s of %s" % (Card.VALUES[self.value], Card.SUITS[self.suit]))
 
     def Flip(self):
         if self.face_up:
@@ -67,10 +67,10 @@ class Card(object):
     def full_filename(self):
         return ("%sof%s.png" % (self.VALUES[self.value],self.SUITS[self.suit]))
 
-# def start_test():
-#     card = Card("AH")
-#     print(repr(card))
-#     print(str(card))
-#
-# if __name__ == "__main__":
-#     start_test()
+def start_test():
+     card = Card("AH")
+     print(repr(card))
+     print(str(card))
+
+if __name__ == "__main__":
+     start_test()

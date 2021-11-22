@@ -120,8 +120,7 @@ class EventManager(object):
                 if self.debug:
                     ##TODO-use the logging module
                     if event.name != "tick":
-                        pass
-                        print event
+                        print (event)
                         
                 if event.event_target in self.listeners: # specifically targeted events
                     method = getattr(event.event_target, event.method_name, None)
@@ -383,8 +382,8 @@ class Label(Widget):
         font_name = pygame.font.get_default_font()
         self.font = pygame.font.SysFont(font_name, self.font_size)
         self.font_color = (255,255,255)
-        print self.font
-        print self.text
+        print (self.font)
+        print (self.text)
         self.width, self.height = self.font.size(self.text)
         self.text_y_offset = 3
         self.text_x_offset = 0
@@ -734,7 +733,7 @@ class GUIController(object):
     # events specific to the GUIController
     
     def on_gui_redraw(self, evt):
-        print "redraw"
+        print ("redraw")
         self.redraw()
 
     def on_quit(self, evt):

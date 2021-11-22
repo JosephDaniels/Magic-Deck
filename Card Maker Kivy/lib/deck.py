@@ -13,7 +13,6 @@ import time
 
 import sys
 
-
 ## Gui Library Imports
 
 import math, glob
@@ -238,7 +237,7 @@ class Deck(object):
 
 
     def spit_it_out(self):
-        print self.print_me()
+        print (self.print_me())
 
 
     def shuffle(self):

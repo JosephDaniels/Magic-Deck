@@ -98,11 +98,11 @@ def create_widgets():
 
 class Echo(object):
     def on_echo(self, evt):
-        print "echo:"
-        print evt.text
+        print ("echo:")
+        print (evt.text)
         
     def on_keypress(self, evt):
-        print evt.key
+        print (evt.key)
         
 
 class TestController(GUIController):
@@ -114,10 +114,10 @@ class TestController(GUIController):
         
 
     def on_clicked_from_allo_btn(self, evt):
-        print "allo"
+        print ("allo")
     
     def on_clicked_from_any(self, evt):
-        print "generic clicked"
+        print ("generic clicke evt")
         
         
 def test_gui():
